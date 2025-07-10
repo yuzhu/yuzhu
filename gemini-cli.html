@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini CLI Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://css.gg/css?=|info|play-button-o|play-pause-o" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #111827;
+            overflow: hidden;
+        }
+        .slide {
+            width: 100%;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 4rem;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            z-index: 10;
+        }
+        .slide-content {
+            max-width: 1000px;
+            width: 100%;
+        }
+        .code-block {
+            background-color: #1f2937;
+            color: #d1d5db;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: left;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .nav-button {
+            position: fixed;
+            bottom: 2rem;
+            z-index: 20;
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .nav-button:hover {
+            background-color: #4338ca;
+        }
+        #prevBtn {
+            left: 2rem;
+        }
+        #nextBtn {
+            right: 2rem;
+        }
+        #playPauseBtn {
+            left: 50%;
+            transform: translateX(-50%);
+            width: 56px;
+            height: 56px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #playPauseBtn .gg-play-button-o, #playPauseBtn .gg-play-pause-o {
+            transform: scale(1.5);
+        }
+        #subtitle-container {
+            position: fixed;
+            bottom: 7rem; /* Adjusted to be above nav buttons */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 56rem; /* 896px */
+            padding: 0 2rem;
+            text-align: center;
+            z-index: 15;
+            pointer-events: none; /* Allow clicks to pass through */
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.3s ease-in-out; /* Add a nice fade */
+        }
+        #subtitle-text {
+            font-size: 1.25rem; /* 20px */
+            color: #1f2937;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            display: inline-block; /* Fit content */
+            max-width: 100%;
+        }
+        h1 { font-size: 3rem; font-weight: 700; }
+        h2 { font-size: 2.25rem; font-weight: 700; margin-bottom: 2rem; }
+        h3 { font-size: 1.5rem; font-weight: 500; margin-bottom: 1rem; }
+        p { font-size: 1.125rem; line-height: 1.75; color: #374151; }
+        .grid-cols-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+        .text-left { text-align: left; }
+        .text-indigo-500 { color: #6366f1; }
+        .text-emerald-400 { color: #34d399; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-yellow-400 { color: #facc15; }
+        .text-sky-400 { color: #38bdf8; }
+        .benefit-box {
+            background-color: #eef2ff;
+            border: 1px solid #c7d2fe;
+            border-left-width: 4px;
+            border-left-color: #6366f1;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slides -->
+    <section class="slide active" id="slide1" 
+        data-speech="Welcome! This presentation will guide you through the power of Gemini CLI, a tool designed to bring advanced AI directly into your command-line workflow. We'll cover everything from installation to sophisticated automation techniques that can save you hours of work."
+        data-subtitle="欢迎！本演示将向您介绍 Gemini CLI 的强大功能，这是一个旨在将先进的人工智能直接带入您命令行工作流程的工具。我们将涵盖从安装到可以为您节省数小时工作的复杂自动化技术的所有内容。">
+    </section>
+    <section class="slide" id="slide2"
+        data-speech="So, what exactly is Gemini CLI? Think of it as your AI-powered copilot in the terminal. It's not just for asking questions; it's a development tool that can help you write and refactor code, generate documentation, summarize complex files, and even automate entire workflows, keeping you focused and in the zone."
+        data-subtitle="那么，Gemini CLI 到底是什么？可以把它看作是您在终端中的 AI 驱动的副驾驶。它不仅仅是用来提问的；它是一个开发工具，可以帮助您编写和重构代码、生成文档、总结复杂文件，甚至自动化整个工作流程，让您保持专注。">
+    </section>
+    <section class="slide" id="slide3"
+        data-speech="Getting started is simple. If you're in the Node.js ecosystem, you can install it globally using npm. If you're a Python developer, you can use pip. After installation, the crucial step is to set your API key as an environment variable. You can get a free key from Google AI Studio, and by authenticating with your Google account, you unlock a very generous free tier, perfect for getting started and for most daily tasks."
+        data-subtitle="入门非常简单。如果您在 Node.js 生态系统中，可以使用 npm 全局安装它。如果您是 Python 开发人员，则可以使用 pip。安装后，关键步骤是设置您的 API 密钥作为环境变量。您可以从 Google AI Studio 获得免费密钥，通过您的 Google 帐户进行身份验证，您将解锁一个非常慷慨的免费套餐，非常适合入门和大多数日常任务。">
+    </section>
+    <section class="slide" id="slide4"
+        data-speech="Let's look at some basic commands to get a feel for how it works. You can ask it to generate code, like a recursive factorial function. You can use it for creative tasks, like brainstorming names for a new project. And you can point it at local files to get quick summaries, which is incredibly useful for understanding new codebases."
+        data-subtitle="让我们看一些基本命令来感受一下它的工作原理。您可以让它生成代码，比如一个递归阶乘函数。您可以将它用于创造性任务，比如为一个新项目构思名称。您还可以将它指向本地文件以获得快速摘要，这对于理解新的代码库非常有用。">
+    </section>
+    <section class="slide" id="slide5"
+        data-speech="Now for our first deep dive: generating detailed upgrade instructions. We've all read release notes that were too vague. Here, we'll show how to use Gemini CLI to analyze the actual code changes in a git repository to create instructions that are specific, actionable, and truly helpful for developers."
+        data-subtitle="现在进行我们的第一个深度探讨：生成详细的升级说明。我们都读过过于模糊的发行说明。在这里，我们将展示如何使用 Gemini CLI 分析 git 仓库中的实际代码更改，以创建具体、可操作且对开发人员真正有帮助的说明。">
+    </section>
+    <section class="slide" id="slide6"
+        data-speech="This brings us to a key advantage of this approach. Why feed it the full 'git diff'? Because commit messages can lie, or at least, they don't always tell the whole story. By giving Gemini the actual code, it can see everything. It can spot a changed configuration value, notice a new dependency in a package file, or understand the nuance of a logic change that the commit message completely missed. This is the difference between summarization and true analysis."
+        data-subtitle="这就引出了这种方法的一个关键优势。为什么要提供完整的 'git diff'？因为提交信息可能会骗人，或者至少它们并不总能说明全部情况。通过向 Gemini 提供实际代码，它可以看到所有内容。它可以发现配置值的更改，注意到包文件中的新依赖项，或者理解提交信息完全遗漏的逻辑更改的细微差别。这就是摘要和真正分析之间的区别。">
+    </section>
+    <section class="slide" id="slide7"
+        data-speech="Here is the command that makes it all happen. It's a powerful one-liner that first defines the range of commits we're interested in. Then, it pipes the full git log *and* the full git diff for that range directly into the 'gemini' command. The prompt then instructs the AI to act as a developer, analyzing both the messages and the code to produce detailed upgrade instructions, focusing specifically on what a developer would need to know."
+        data-subtitle="这就是实现这一切的命令。这是一个强大的一行命令，首先定义我们感兴趣的提交范围。然后，它将该范围的完整 git 日志*和*完整 git diff 直接通过管道传递给 'gemini' 命令。然后，提示会指示 AI 扮演开发人员的角色，分析消息和代码以生成详细的升级说明，特别关注开发人员需要了解的内容。">
+    </section>
+    <section class="slide" id="slide8"
+        data-speech="And here's the kind of output you can expect. It's not just a list of features. It's actionable guidance. It tells you to run 'npm install' because it saw a change in 'package.json'. It warns you about a new, required environment variable it discovered in the code. And it points out a potentially breaking change where a database field was renamed. This is information you might have missed with a manual review."
+        data-subtitle="这就是您可以期待的输出类型。它不仅仅是一个功能列表，而是可操作的指导。它告诉您运行 'npm install'，因为它在 'package.json' 中看到了更改。它会警告您代码中发现了一个新的、必需的环境变量。并且它指出了一个潜在的破坏性更改，即数据库字段已重命名。这是您在手动审查中可能会遗漏的信息。">
+    </section>
+    <section class="slide" id="slide9"
+        data-speech="For our second deep dive, we'll tackle an even more complex task: scaffolding a brand new DuckDB extension. This showcases how Gemini CLI can be used not just for analysis, but for code generation and project bootstrapping, saving you from writing hours of boilerplate code."
+        data-subtitle="在我们的第二个深度探讨中，我们将处理一个更复杂的任务：为一个全新的 DuckDB 扩展搭建脚手架。这展示了 Gemini CLI 不仅可以用于分析，还可以用于代码生成和项目引导，为您节省编写数小时样板代码的时间。">
+    </section>
+    <section class="slide" id="slide10"
+        data-speech="The prompt here is specific and detailed. We tell Gemini the language, the purpose of the extension, and the exact components we need: the basic file structure, the C++ code for the main file, the extension loading function, and a placeholder for our table function. We also ask it to explain the next steps."
+        data-subtitle="这里的提示是具体而详细的。我们告诉 Gemini 语言、扩展的目的以及我们需要的确切组件：基本文件结构、主文件的 C++ 代码、扩展加载函数以及一个用于表函数的占位符。我们还要求它解释后续步骤。">
+    </section>
+    <section class="slide" id="slide11"
+        data-speech="As you can see, Gemini generates a complete, well-structured C++ file. It includes all the necessary headers, defines the extension class, registers a placeholder function, and sets up the C-style entry points that DuckDB expects. This is a perfect starting point for development."
+        data-subtitle="如您所见，Gemini 生成了一个完整、结构良好的 C++ 文件。它包含了所有必需的头文件，定义了扩展类，注册了一个占位符函数，并设置了 DuckDB 期望的 C 风格入口点。这是一个完美的开发起点。">
+    </section>
+    <section class="slide" id="slide12"
+        data-speech="Just as importantly, Gemini doesn't just give you code; it gives you a plan. It outlines the exact steps you need to take next: integrate the Alluxio client library, implement the actual file reading logic in the placeholder function, compile the code, and finally, test it. This turns a daunting task into a manageable, step-by-step process."
+        data-subtitle="同样重要的是，Gemini 不仅为您提供代码，还为您提供了一个计划。它概述了您接下来需要采取的确切步骤：集成 Alluxio 客户端库，在占位符函数中实现实际的文件读取逻辑，编译代码，最后进行测试。这将一个艰巨的任务变成了一个可管理的、循序渐进的过程。">
+    </section>
+    <section class="slide" id="slide13"
+        data-speech="Our final deep dive demonstrates a multi-step, agentic workflow. We'll have Gemini first perform a research task, save the output, and then use that output as the context for a second task: generating a brand new artifact. This shows how you can chain commands together to tackle complex projects."
+        data-subtitle="我们的最后一个深度探讨演示了一个多步骤的代理工作流程。我们将让 Gemini 首先执行一个研究任务，保存输出，然后将该输出用作第二个任务的上下文：生成一个全新的工件。这展示了如何将命令链接在一起以处理复杂的项目。">
+    </section>
+    <section class="slide" id="slide14"
+        data-speech="Step one is research. We ask Gemini to investigate a complex topic: storage solutions for agentic AI workflows. We ask it to focus on specific criteria like persistence, versioning, and cost. The output of this command is redirected and saved to a Markdown file, which will serve as the foundation for our next step."
+        data-subtitle="第一步是研究。我们要求 Gemini 调查一个复杂的主题：用于代理式 AI 工作流的存储解决方案。我们要求它关注持久性、版本控制和成本等特定标准。此命令的输出被重定向并保存到一个 Markdown 文件中，该文件将作为我们下一步的基础。">
+    </section>
+    <section class="slide" id="slide15"
+        data-speech="The result of the first step is a well-structured research document. Gemini has identified and summarized key concepts. It discusses the challenges of saving an agent's state, and it outlines potential solutions like state snapshots, event sourcing, and using specialized vector databases. This document is now our expert knowledge base."
+        data-subtitle="第一步的结果是一个结构良好的研究文档。Gemini 识别并总结了关键概念。它讨论了保存代理状态的挑战，并概述了潜在的解决方案，如状态快照、事件溯源和使用专门的向量数据库。这份文件现在是我们的专家知识库。">
+    </section>
+    <section class="slide" id="slide16"
+        data-speech="Now for step two: artifact generation. We execute a second command, but this time, we reference the research file we just created using the '@' syntax. We instruct Gemini to use this context to create a completely new thing: a five-slide HTML presentation, complete with Tailwind CSS for styling. It's now building upon its own previous work."
+        data-subtitle="现在是第二步：工件生成。我们执行第二个命令，但这次，我们使用 '@' 语法引用我们刚刚创建的研究文件。我们指示 Gemini 使用此上下文创建一个全新的东西：一个带有 Tailwind CSS 样式的五页 HTML 演示文稿。它现在正在基于自己的先前工作进行构建。">
+    </section>
+    <section class="slide" id="slide17"
+        data-speech="And here is a snippet of the result. Gemini has successfully taken the concepts from the research document and translated them into the structure of an HTML slide deck. It has created slides for the problem, the challenges, and the solutions, all based on the context we provided. This demonstrates a powerful, end-to-end content creation workflow, all from the command line."
+        data-subtitle="这是结果的一个片段。Gemini 成功地将研究文档中的概念转化为 HTML 幻灯片组的结构。它根据我们提供的上下文创建了关于问题、挑战和解决方案的幻灯片。这展示了一个强大的、端到端的内容创建工作流程，全部通过命令行完成。">
+    </section>
+    <section class="slide" id="slide18"
+        data-speech=""
+        data-subtitle="">
+    </section>
+    <section class="slide" id="slide19"
+        data-speech=""
+        data-subtitle="">
+    </section>
+    <section class="slide" id="slide20"
+        data-speech="We've seen how Gemini CLI can transform your command-line experience, from simple queries to advanced code analysis and generation. We encourage you to start experimenting with your own workflows. The possibilities are vast. Thank you for watching."
+        data-subtitle="我们已经看到 Gemini CLI 如何改变您的命令行体验，从简单的查询到高级的代码分析和生成。我们鼓励您开始尝试自己的工作流程。可能性是无限的。感谢您的观看。">
+    </section>
+
+    <!-- Subtitle Container -->
+    <div id="subtitle-container">
+        <p id="subtitle-text"></p>
+    </div>
+
+    <!-- Navigation -->
+    <button id="prevBtn" class="nav-button">Previous</button>
+    <button id="playPauseBtn" class="nav-button"><i class="gg-play-button-o"></i></button>
+    <button id="nextBtn" class="nav-button">Next</button>
+
+    <script>
+        // This is a simplified script to avoid polluting the global scope
+        (() => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const subtitleContainer = document.getElementById('subtitle-container');
+            const subtitleText = document.getElementById('subtitle-text');
+            const playIcon = '<i class="gg-play-button-o"></i>';
+            const pauseIcon = '<i class="gg-play-pause-o"></i>';
+
+            let currentSlide = 0;
+            let presentationState = 'stopped'; // states: stopped, playing, paused
+            let autoAdvanceTimeout;
+            let currentUtterance = null;
+
+            // Inject slide content dynamically to keep HTML clean
+            const slideContents = [
+                // Slide 1
+                `<div class="slide-content">
+                    <h1 class="text-5xl md:text-6xl font-bold text-gray-800">Power Up Your Workflow with <span class="text-indigo-600">Gemini CLI</span></h1>
+                    <p class="mt-6 text-xl text-gray-600">A guide to installation, usage, and advanced automation.</p>
+                </div>`,
+                // Slide 2
+                `<div class="slide-content">
+                    <h2>What is Gemini CLI?</h2>
+                    <p>Gemini CLI is a powerful command-line tool that brings Google's advanced AI models directly to your terminal. It allows you to:</p>
+                    <ul class="list-disc list-inside text-left mt-6 space-y-2 text-lg text-gray-700 max-w-2xl mx-auto">
+                        <li>Write and refactor code</li>
+                        <li>Generate documentation and creative text</li>
+                        <li>Summarize files and web content</li>
+                        <li>Automate complex workflows</li>
+                        <li>And much more, all without leaving your command line!</li>
+                    </ul>
+                </div>`,
+                // Slide 3
+                `<div class="slide-content">
+                    <h2>Installation & Setup</h2>
+                    <div class="grid-cols-2 text-left">
+                        <div>
+                            <h3 class="text-2xl font-semibold">1. Install the Tool</h3>
+                            <p class="mb-4">Choose your preferred package manager.</p>
+                            <p class="font-semibold">Node.js (npm):</p>
+                            <div class="code-block text-sm">npm install -g @google/gemini-cli</div>
+                            <p class="font-semibold mt-4">Python (pip):</p>
+                            <div class="code-block text-sm">pip install google-generativeai</div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold">2. Set Your API Key</h3>
+                            <p class="mb-2">Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-600 underline">Google AI Studio</a>.</p>
+                            <div class="code-block text-sm">
+                                <span class="text-gray-400"># For macOS / Linux</span><br>
+                                <span class="text-sky-400">export</span> <span class="text-yellow-400">GEMINI_API_KEY</span>="your_api_key_here"
+                            </div>
+                            <div class="mt-4 bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                                <h4 class="font-semibold text-indigo-800">Generous Free Tier</h4>
+                                <p class="text-sm text-indigo-700 mt-1">By authenticating with your Google account, you get access to a generous free quota, typically up to **60 requests per minute** and **1,000 requests per day**.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>`,
+                // Slide 4
+                `<div class="slide-content">
+                    <h2>Simple Examples</h2>
+                    <p>Get a feel for \`gemini-cli\` with these basic commands.</p>
+                    <div class="code-block text-left">
+                        <span class="text-gray-400"># Get a quick code snippet</span><br>
+                        $ gemini "Write a Python function for factorial using recursion"<br><br>
+                        <span class="text-gray-400"># Brainstorm ideas</span><br>
+                        $ gemini "Give me 5 creative names for a new tech blog"<br><br>
+                        <span class="text-gray-400"># Summarize a local file</span><br>
+                        $ gemini "Summarize the main points of @./project/README.md"
+                    </div>
+                </div>`,
+                // Slide 5
+                `<div class="slide-content">
+                    <h2>Deep Dive 1: Generating Upgrade Instructions</h2>
+                    <p class="max-w-3xl mx-auto">Generic release notes often miss crucial details. Let's create detailed, actionable upgrade instructions by having Gemini analyze the actual code changes from \`git\`.</p>
+                    <div class="mt-8 flex justify-center items-center space-x-8">
+                        <div class="text-5xl">👨‍💻</div>
+                        <div class="text-2xl font-bold text-gray-500">&rarr;</div>
+                        <div class="text-5xl">🤖</div>
+                        <div class="text-2xl font-bold text-gray-500">&rarr;</div>
+                        <div class="text-5xl">📖</div>
+                    </div>
+                    <p class="mt-4 text-lg">We'll pipe \`git log\` and \`git diff\` directly into \`gemini-cli\` for a deep analysis.</p>
+                </div>`,
+                // Slide 6
+                `<div class="slide-content">
+                    <h2>The Power of Full Context: \`log\` + \`diff\`</h2>
+                    <p>Why use the full \`git diff\` instead of just commit messages?</p>
+                    <div class="benefit-box text-left">
+                        <h3 class="font-bold text-indigo-800 flex items-center"><i class="gg-info mr-2"></i>A Key Advantage</h3>
+                        <p class="text-indigo-900 mt-2">Commit messages can be vague or incomplete. By providing the full \`git diff\`, you allow Gemini to **analyze the actual code that changed.** It can spot things the commit message missed, like:
+                            <ul class="list-disc list-inside mt-2 pl-4">
+                                <li>Specific configuration value changes (e.g., a timeout was increased).</li>
+                                <li>New function arguments or dependency updates.</li>
+                                <li>Subtle logic changes that have important implications.</li>
+                            </ul>
+                        This results in far more accurate and reliable instructions.
+                        </p>
+                    </div>
+                </div>`,
+                // Slide 7
+                `<div class="slide-content">
+                    <h2>The One-Liner Command</h2>
+                    <p>This single command pipes the commit log and the full diff of recent changes directly into Gemini.</p>
+                    <div class="code-block text-sm">
+                        <span class="text-gray-400"># Define the git revision range, e.g., last 5 commits</span><br>
+                        <span class="text-sky-400">REVISION_RANGE</span>="HEAD~5..HEAD"<br><br>
+                        <span class="text-gray-400"># Pipe the log and the full diff into gemini-cli</span><br>
+                        { git log --pretty=fuller <span class="text-yellow-400">\${REVISION_RANGE}</span>; echo -e "\\n---\\n"; git diff <span class="text-yellow-400">\${REVISION_RANGE}</span>; } | gemini "Analyze the provided git log and diff to create detailed upgrade instructions for a developer. Focus on breaking changes, new features, and any manual steps required. Infer the purpose from both the commit messages and the code changes."
+                    </div>
+                </div>`,
+                // Slide 8
+                `<div class="slide-content">
+                    <h2>The Result: Detailed Instructions</h2>
+                    <p>The output is no longer just a list of commits, but actionable guidance.</p>
+                    <div class="code-block text-sm mt-2 text-left">
+                        <span class="text-emerald-400"># Upgrade Instructions for v2.3.0</span><br><br>
+                        <span class="text-sky-400">## Summary</span><br>
+                        This release introduces a new authentication module and fixes a critical bug in the user model. Key changes involve new environment variables and potential breaking changes in the \`User\` object.<br><br>
+                        <span class="text-sky-400">## New Features</span><br>
+                        * **User Authentication:** A new authentication endpoint has been added (\`/auth/login\`). This required adding \`jsonwebtoken\` to \`package.json\`. Please run \`npm install\`.<br><br>
+                        <span class="text-sky-400">## Breaking Changes & Manual Steps</span><br>
+                        * **Environment Variable:** You must add \`JWT_SECRET\` to your \`.env\` file for the new authentication service to work.<br>
+                        * **User Model:** The \`password\` field in the \`User\` model has been renamed to \`passwordHash\`. Please review any code that directly accesses this property.
+                    </div>
+                </div>`,
+                // Slide 9
+                `<div class="slide-content">
+                    <h2>Deep Dive 2: Scaffolding a DuckDB Extension</h2>
+                    <p class="max-w-3xl mx-auto">For a more advanced coding task, let's use \`gemini-cli\` to generate the boilerplate for a complex piece of software: a DuckDB extension to read data from the Alluxio file system.</p>
+                    <p class="mt-4 text-lg">This demonstrates how Gemini can kickstart development by providing a solid foundation and a clear roadmap.</p>
+                </div>`,
+                // Slide 10
+                `<div class="slide-content">
+                    <h2>DuckDB Extension - The Prompt</h2>
+                    <p>We'll use a detailed prompt to ask for the file structure, C++ code, and an explanation of the next steps.</p>
+                    <div class="code-block text-sm text-left">
+                        $ gemini "I want to write a DuckDB extension in C++ to read data from the Alluxio file system. The extension should be named 'alluxio'. Please generate the basic file structure and the initial C++ code for the main extension file. The code should include the extension loading function and a placeholder for a table function to read a file from Alluxio. Also, provide a brief explanation of the key functions and next steps."
+                    </div>
+                </div>`,
+                // Slide 11
+                `<div class="slide-content">
+                    <h2>DuckDB Extension - Generated Code</h2>
+                    <p>Gemini provides the C++ boilerplate for \`alluxio_extension.cpp\`.</p>
+                    <div class="code-block text-xs text-left">
+<pre><code>#include "duckdb.hpp"
+#include "duckdb/function/table_function.hpp"
+#include "duckdb/main/extension_util.hpp"
+
+// Include Alluxio client library headers here
+
+using namespace duckdb;
+
+// Placeholder function to read data from Alluxio
+static void AlluxioReadFunction(ClientContext &context, TableFunctionInput &data, DataChunk &output) {
+    // TODO: Implement the logic to connect to Alluxio, read a file,
+    // and populate the output DataChunk.
+}
+
+class AlluxioExtension : public Extension {
+public:
+    void Load(DuckDB &db) override {
+        TableFunction alluxio_read("alluxio_read", {LogicalType::VARCHAR}, AlluxioReadFunction, nullptr);
+        ExtensionUtil::RegisterFunction(*db.instance, alluxio_read);
+    }
+    std::string Name() override { return "alluxio"; }
+};
+
+extern "C" {
+    DUCKDB_EXTENSION_API void alluxio_init(DatabaseInstance &db) {
+        db.LoadExtension&lt;AlluxioExtension&gt;();
+    }
+    DUCKDB_EXTENSION_API const char *alluxio_version() {
+        return DuckDB::LibraryVersion();
+    }
+}</code></pre>
+                    </div>
+                </div>`,
+                // Slide 12
+                `<div class="slide-content">
+                    <h2>DuckDB Extension - Next Steps</h2>
+                    <p>Crucially, Gemini also provides a clear roadmap for what to do next.</p>
+                    <div class="text-left max-w-3xl mx-auto bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+                        <h3 class="font-bold text-indigo-800">Your development plan:</h3>
+                        <ol class="list-decimal list-inside mt-4 space-y-3 text-indigo-900">
+                            <li>
+                                <strong>Integrate Alluxio Client API:</strong> Add the necessary \`#include\` directives for the Alluxio C++ client library and link against it in your build system.
+                            </li>
+                            <li>
+                                <strong>Implement File Reading Logic:</strong> Flesh out the \`AlluxioReadFunction\`. Use the Alluxio client to connect to the cluster, open the file path passed as an argument, read its contents (e.g., a CSV or Parquet file), and populate the \`output\` \`DataChunk\` with the parsed data.
+                            </li>
+                            <li>
+                                <strong>Compile and Install:</strong> Create a \`Makefile\` or use a build system like CMake to compile your C++ code into a shared library (\`.duckdb_extension\`).
+                            </li>
+                            <li>
+                                <strong>Load and Test:</strong> Launch DuckDB, \`INSTALL\` and \`LOAD\` your new extension, and test it by calling your \`alluxio_read('alluxio://path/to/file')\` table function.
+                            </li>
+                        </ol>
+                    </div>
+                </div>`,
+                 // Slide 13
+                `<div class="slide-content">
+                    <h2>Deep Dive 3: Research & Artifact Generation</h2>
+                    <p class="max-w-3xl mx-auto">This final example shows a multi-step workflow where Gemini builds upon its own output, acting like a true agent.</p>
+                    <div class="mt-8 flex justify-center items-center space-x-8">
+                        <div class="text-5xl">🔎</div>
+                        <div class="text-2xl font-bold text-gray-500">&rarr;</div>
+                        <div class="text-5xl">📝</div>
+                        <div class="text-2xl font-bold text-gray-500">&rarr;</div>
+                        <div class="text-5xl">💻</div>
+                    </div>
+                    <p class="mt-4 text-lg">We'll have Gemini research a topic, save the result, then use that result to generate a new slide deck.</p>
+                </div>`,
+                // Slide 14
+                `<div class="slide-content">
+                    <h2>Step 1: The Research Prompt</h2>
+                    <p>First, we ask Gemini to act as a researcher and save its findings to a file.</p>
+                    <div class="code-block text-sm">
+$ gemini "Research the key challenges and emerging solutions for storing the state of long-running agentic AI workflows. Focus on persistence, versioning, and cost-efficiency. Output a detailed summary." > agentic_storage_research.md
+                    </div>
+                </div>`,
+                // Slide 15
+                `<div class="slide-content">
+                    <h2>Step 1 Result: The Research Document</h2>
+                    <p>Gemini produces a detailed markdown file summarizing the topic.</p>
+                    <div class="code-block text-sm text-left">
+                        <span class="text-emerald-400"># Agentic AI Storage Solutions</span><br><br>
+                        <span class="text-sky-400">## Key Challenges</span><br>
+                        - **State Persistence:** Agent state can be large and complex, making atomic saves difficult.<br>
+                        - **Versioning:** Need to roll back to previous states for debugging or alternate paths.<br>
+                        - **Cost:** Constant state saving can be expensive in terms of storage and compute.<br><br>
+                        <span class="text-sky-400">## Solution Patterns</span><br>
+                        1. **State Snapshots:** Periodically saving the entire agent state to blob storage.<br>
+                        2. **Event Sourcing:** Storing a log of all actions taken by the agent...<br>
+                        3. **Hybrid Model:** Combining snapshots with an event log for recent actions.
+                    </div>
+                </div>`,
+                // Slide 16
+                `<div class="slide-content">
+                    <h2>Step 2: The Generation Prompt</h2>
+                    <p>Now, we use the research document as context for a new task.</p>
+                    <div class="code-block text-sm">
+$ gemini "Using the research summary at @agentic_storage_research.md, create a 5-slide presentation in HTML with Tailwind CSS. The presentation should cover the problem, key challenges, and three different solution patterns." > presentation.html
+                    </div>
+                </div>`,
+                // Slide 17
+                `<div class="slide-content">
+                    <h2>Step 2 Result: A New Artifact</h2>
+                    <p>Gemini generates a completely new HTML file based on the research.</p>
+                    <div class="code-block text-xs text-left">
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Agentic AI Storage&lt;/title&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Slide 1: Title --&gt;
+  &lt;div class="slide"&gt;
+    &lt;h1&gt;Storing Agentic AI State&lt;/h1&gt;
+  &lt;/div&gt;
+  &lt;!-- Slide 2: Key Challenges --&gt;
+  &lt;div class="slide"&gt;
+    &lt;h2&gt;Key Challenges&lt;/h2&gt;
+    &lt;ul&gt;
+      &lt;li&gt;State Persistence&lt;/li&gt;
+      &lt;li&gt;Versioning&lt;/li&gt;
+      &lt;li&gt;Cost-Efficiency&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+  ...
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+                    </div>
+                </div>`,
+                // Slide 18
+                `<div class="slide-content text-left">
+                    <h2>Example Prompts Summary</h2>
+                    <p>These are the prompts used for the deep-dive examples within this presentation.</p>
+                    <div class="code-block text-xs" style="height: 65vh; overflow-y: auto;">
+                        <span class="text-emerald-400"># 1. Generating Upgrade Instructions</span><br>
+                        <span class="text-gray-400"># (Piping git log and full diff)</span><br>
+                        <span class="text-sky-400">REVISION_RANGE</span>="HEAD~5..HEAD"<br>
+                        { git log --pretty=fuller <span class="text-yellow-400">\${REVISION_RANGE}</span>; echo -e "\\n---\\n"; git diff <span class="text-yellow-400">\${REVISION_RANGE}</span>; } | gemini "Analyze the provided git log and diff to create detailed upgrade instructions for a developer. Focus on breaking changes, new features, and any manual steps required. Infer the purpose from both the commit messages and the code changes."
+                        <br><br>
+                        <span class="text-emerald-400"># 2. Scaffolding a DuckDB Extension</span><br>
+                        gemini "I want to write a DuckDB extension in C++ to read data from the Alluxio file system. The extension should be named 'alluxio'. Please generate the basic file structure and the initial C++ code for the main extension file. The code should include the extension loading function and a placeholder for a table function to read a file from Alluxio. Also, provide a brief explanation of the key functions and next steps."
+                        <br><br>
+                        <span class="text-emerald-400"># 3. Researching a Topic</span><br>
+                        gemini "Research the key challenges and emerging solutions for storing the state of long-running agentic AI workflows. Focus on persistence, versioning, and cost-efficiency. Output a detailed summary." > agentic_storage_research.md
+                        <br><br>
+                        <span class="text-emerald-400"># 4. Generating an Artifact from Research</span><br>
+                        gemini "Using the research summary at @agentic_storage_research.md, create a 5-slide presentation in HTML with Tailwind CSS. The presentation should cover the problem, key challenges, and three different solution patterns." > presentation.html
+                    </div>
+                </div>`,
+                // Slide 19
+                `<div class="slide-content text-left">
+                    <h2>Our Conversation History</h2>
+                    <p>This presentation was built iteratively. Here are the prompts you used to guide its creation:</p>
+                    <div class="code-block text-xs" style="height: 65vh; overflow-y: auto;">
+                        <span class="text-emerald-400"># 1. Initial Request</span><br>
+                        "make a slide deck using canvas showing how to install gemini-cli, some simple examples, and deep dive into two examples. 1.  Use gemini-cli to generate a release notes focusing on new features, bug fixes, security fixes and configuration changes. 2. Use gemini-cli to write an extension for duckdb in alluxio file system."
+                        <br><br>
+                        <span class="text-emerald-400"># 2. Refinement: From File to Git</span><br>
+                        "make this into slides and make sure the release notes example does not assume change.txt exist, it needs to generate it from the source repo"
+                        <br><br>
+                        <span class="text-emerald-400"># 3. Refinement: Adding Detail</span><br>
+                        "mention the free quota for each account on the setup page, instead of using git log, use both git log and git diff in the release notes example"
+                        <br><br>
+                        <span class="text-emerald-400"># 4. Refinement: Deeper Analysis</span><br>
+                        "instead of using git diff stats, use the full git diff, because this allows gemini-cli to discover things missing in the git commit message. Mention that as an important benefit. also instead of manually triggering git diff and git log, ask gemini-cli directly to generate the release notes. perhaps release notes is not the right term, we are trying to generate a detailed upgrade instruction for the user, so details matter."
+                        <br><br>
+                        <span class="text-emerald-400"># 5. Adding Features</span><br>
+                        "can you make this slidedeck with voice over explaining each page with more details and essentially a fully automated presentation? but with a pause button"
+                        <br><br>
+                        <span class="text-emerald-400"># 6. Adding Another Example</span><br>
+                        "add a deep dive example where a user asks gemini to research on agentic ai storage solutions and makes a slide deck using canvas."
+                        <br><br>
+                        <span class="text-emerald-400"># 7. Final Polish</span><br>
+                        "add chinese subtitles to this slide deck"
+                    </div>
+                </div>`,
+                // Slide 20
+                `<div class="slide-content">
+                    <h2 class="text-4xl">Start Automating Today</h2>
+                    <p class="mt-4 text-xl text-gray-600">Gemini CLI is a versatile tool that can significantly boost your productivity.</p>
+                    <p class="mt-2 text-xl text-gray-600">Experiment with your own workflows and see what you can build!</p>
+                    <div class="mt-8">
+                        <a href="https://github.com/google-gemini/gemini-cli" target="_blank" class="text-lg bg-gray-800 text-white py-3 px-6 rounded-lg hover:bg-gray-900 transition-colors">
+                            View on GitHub
+                        </a>
+                    </div>
+                </div>`
+            ];
+
+            slides.forEach((slide, index) => {
+                slide.innerHTML = slideContents[index];
+            });
+
+            function speak(text, onEndCallback) {
+                if (!('speechSynthesis' in window) || !text) {
+                    if(onEndCallback) onEndCallback();
+                    return;
+                }
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.onend = onEndCallback;
+                utterance.onerror = (event) => {
+                    console.error('SpeechSynthesisUtterance.onerror', event);
+                     if(onEndCallback) onEndCallback();
+                };
+                currentUtterance = utterance;
+                speechSynthesis.speak(utterance);
+            }
+            
+            function advanceSlide() {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                } else {
+                    presentationState = 'stopped';
+                    playPauseBtn.innerHTML = playIcon;
+                    subtitleContainer.style.opacity = '0';
+                }
+            }
+
+            function playCurrentSlide() {
+                const activeSlide = slides[currentSlide];
+                const speechText = activeSlide.dataset.speech;
+                const subtitleContent = activeSlide.dataset.subtitle || '';
+                
+                subtitleText.textContent = subtitleContent;
+                if(subtitleContent) {
+                    subtitleContainer.style.opacity = '1';
+                } else {
+                    subtitleContainer.style.opacity = '0';
+                }
+                
+                if (speechText) {
+                    speak(speechText, () => {
+                        if (presentationState === 'playing') {
+                           autoAdvanceTimeout = setTimeout(advanceSlide, 1000);
+                        }
+                    });
+                } else {
+                    // No speech, advance after a short delay
+                    if (presentationState === 'playing') {
+                        autoAdvanceTimeout = setTimeout(advanceSlide, 2000); // Wait 2s on silent slides
+                    }
+                }
+            }
+            
+            function showSlide(n) {
+                clearTimeout(autoAdvanceTimeout);
+                
+                if (currentUtterance) {
+                    currentUtterance.onend = null;
+                }
+                speechSynthesis.cancel();
+
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (n + slides.length) % slides.length;
+                const activeSlide = slides[currentSlide];
+                activeSlide.classList.add('active');
+                
+                updateNavButtons();
+
+                if (presentationState === 'playing') {
+                    playCurrentSlide();
+                } else {
+                    subtitleContainer.style.opacity = '0';
+                }
+            }
+
+            function updateNavButtons() {
+                prevBtn.style.display = currentSlide === 0 ? 'none' : 'block';
+                nextBtn.style.display = currentSlide === slides.length - 1 ? 'none' : 'block';
+            }
+
+            function handlePlayPause() {
+                if (presentationState === 'playing') {
+                    presentationState = 'paused';
+                    playPauseBtn.innerHTML = playIcon;
+                    clearTimeout(autoAdvanceTimeout);
+                    speechSynthesis.pause();
+                } else {
+                    const wasPaused = presentationState === 'paused';
+                    presentationState = 'playing';
+                    playPauseBtn.innerHTML = pauseIcon;
+                    if (wasPaused) {
+                        speechSynthesis.resume();
+                    } else {
+                        showSlide(currentSlide);
+                    }
+                }
+            }
+
+            playPauseBtn.addEventListener('click', handlePlayPause);
+            prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
+            nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    if (currentSlide > 0) showSlide(currentSlide - 1);
+                } else if (e.key === 'ArrowRight') {
+                    if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+                } else if (e.key === ' ') {
+                    e.preventDefault();
+                    handlePlayPause();
+                }
+            });
+            
+            // Initialize
+            showSlide(0);
+        })();
+    </script>
+</body>
+</html>
