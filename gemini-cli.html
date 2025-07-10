@@ -67,6 +67,10 @@
         .nav-button:hover {
             background-color: #4338ca;
         }
+        .nav-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
         #prevBtn {
             left: 2rem;
         }
@@ -216,14 +220,26 @@
         data-subtitle="这是结果的一个片段。Gemini 成功地将研究文档中的概念转化为 HTML 幻灯片组的结构。它根据我们提供的上下文创建了关于问题、挑战和解决方案的幻灯片。这展示了一个强大的、端到端的内容创建工作流程，全部通过命令行完成。">
     </section>
     <section class="slide" id="slide18"
-        data-speech=""
-        data-subtitle="">
+        data-speech="Our fourth deep dive focuses on forensic analysis. When a bug is fixed, it's crucial to understand why it happened in the first place to prevent similar issues. We'll use Gemini to analyze a bug-fix commit and generate a Root Cause Analysis, or RCA, report."
+        data-subtitle="我们的第四个深度探讨侧重于取证分析。修复错误后，了解其发生原因至关重要，以防止类似问题再次发生。我们将使用 Gemini 分析一个错误修复提交，并生成一份根本原因分析（RCA）报告。">
     </section>
     <section class="slide" id="slide19"
-        data-speech=""
-        data-subtitle="">
+        data-speech="The process is straightforward. We use 'git diff' to show the changes for a specific bug-fix commit. We then pipe this diff directly to Gemini with a very specific prompt: act as a senior engineer, analyze this patch, and write an RCA. We ask it to identify the user impact, the root cause, and the fix, and to suggest preventative measures."
+        data-subtitle="这个过程很简单。我们使用 'git diff' 来显示特定错误修复提交的更改。然后，我们将此差异直接通过管道传递给 Gemini，并附上一个非常具体的提示：扮演高级工程师的角色，分析此补丁，并撰写一份 RCA。我们要求它确定用户影响、根本原因和修复方案，并提出预防措施。">
     </section>
     <section class="slide" id="slide20"
+        data-speech="The output is a professional RCA document. Gemini correctly identifies that the user impact was a crash. It infers the root cause: a missing null check, which led to an error when processing incomplete data. It describes the fix—adding a guard clause—and, most importantly, suggests a preventative action: improving test coverage for this specific scenario. This is the kind of deep insight that helps improve code quality over time."
+        data-subtitle="输出是一份专业的 RCA 文档。Gemini 正确地识别出用户影响是程序崩溃。它推断出根本原因：缺少空值检查，这导致在处理不完整数据时出错。它描述了修复方案——添加一个保护子句——并且最重要的是，提出了一个预防措施：改进针对此特定场景的测试覆盖率。这种深刻的洞察力有助于随着时间的推移提高代码质量。">
+    </section>
+    <section class="slide" id="slide21"
+        data-speech="This slide summarizes the prompts for the deep-dive examples we just covered. These are not just simple questions; they are instructions that ask Gemini to perform complex tasks like code analysis, generation, and research, demonstrating its versatility as a powerful command-line companion."
+        data-subtitle="本幻灯片总结了我们刚刚介绍的深度探讨示例的提示。这些不仅仅是简单的问题；它们是要求 Gemini 执行复杂任务（如代码分析、生成和研究）的指令，展示了其作为强大命令行伴侣的多功能性。">
+    </section>
+    <section class="slide" id="slide22"
+        data-speech="And this slide provides a meta-look at our own collaboration. These are the actual prompts you used to iteratively build and refine this very presentation. It showcases how a conversation can be used to shape a complex digital artifact, from the initial idea to adding features like voice-overs, subtitles, and new examples."
+        data-subtitle="这张幻灯片则对我们自己的协作进行了元分析。这些是您用来迭代构建和完善这个演示文稿的实际提示。它展示了如何通过对话来塑造一个复杂的数字工件，从最初的想法到添加语音、字幕和新示例等功能。">
+    </section>
+    <section class="slide" id="slide23"
         data-speech="We've seen how Gemini CLI can transform your command-line experience, from simple queries to advanced code analysis and generation. We encourage you to start experimenting with your own workflows. The possibilities are vast. Thank you for watching."
         data-subtitle="我们已经看到 Gemini CLI 如何改变您的命令行体验，从简单的查询到高级的代码分析和生成。我们鼓励您开始尝试自己的工作流程。可能性是无限的。感谢您的观看。">
     </section>
@@ -238,7 +254,7 @@
 
     <!-- Navigation -->
     <button id="prevBtn" class="nav-button">Previous</button>
-    <button id="playPauseBtn" class="nav-button"><i class="gg-play-button-o"></i></button>
+    <button id="playPauseBtn" class="nav-button" disabled><i class="gg-play-button-o"></i></button>
     <button id="nextBtn" class="nav-button">Next</button>
 
     <script>
@@ -256,8 +272,9 @@
 
             let currentSlide = 0;
             let presentationState = 'stopped'; // states: stopped, playing, paused
-            let autoAdvanceTimeout;
             let currentUtterance = null;
+            let voices = [];
+            let isManuallyNavigating = false;
 
             // Inject slide content dynamically to keep HTML clean
             const slideContents = [
@@ -531,6 +548,44 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                     </div>
                 </div>`,
                 // Slide 18
+                `<div class="slide-content">
+                    <h2>Deep Dive 4: Root Cause Analysis</h2>
+                    <p class="max-w-3xl mx-auto">Let's analyze a specific bug-fix commit to understand the original problem and prevent it from happening again.</p>
+                    <div class="mt-8 flex justify-center items-center space-x-8">
+                        <div class="text-5xl">🐞</div>
+                        <div class="text-2xl font-bold text-gray-500">&rarr;</div>
+                        <div class="text-5xl">🕵️</div>
+                        <div class="text-2xl font-bold text-gray-500">&rarr;</div>
+                        <div class="text-5xl">📝</div>
+                    </div>
+                    <p class="mt-4 text-lg">This is a forensic task that goes beyond summarization to true code comprehension.</p>
+                </div>`,
+                // Slide 19
+                `<div class="slide-content">
+                    <h2>The RCA Prompt</h2>
+                    <p>We pipe the diff of a single commit and ask Gemini to perform a Root Cause Analysis.</p>
+                    <div class="code-block text-sm">
+                        <span class="text-gray-400"># Show the changes for a specific commit hash</span><br>
+                        git diff <span class="text-yellow-400">a1b2c3d^!</span> | gemini "You are a senior engineer. Analyze the following patch and write a Root Cause Analysis (RCA) document. Identify the user impact, the underlying root cause (not just the symptom), the fix, and suggest a preventative measure."
+                    </div>
+                </div>`,
+                // Slide 20
+                `<div class="slide-content">
+                    <h2>The RCA Result</h2>
+                    <p>Gemini produces a professional RCA report with actionable insights.</p>
+                    <div class="code-block text-sm text-left">
+                        <span class="text-emerald-400"># Root Cause Analysis: API Crash on Incomplete Profile</span><br><br>
+                        <span class="text-sky-400">## User Impact</span><br>
+                        Users with incomplete profiles experienced a 500 server error when accessing the dashboard, causing a crash.<br><br>
+                        <span class="text-sky-400">## Root Cause</span><br>
+                        The \`processProfile\` function attempted to access \`user.profile.avatarUrl\` without first verifying that the \`user.profile\` object existed. This was a missing null check.<br><br>
+                        <span class="text-sky-400">## The Fix</span><br>
+                        The patch introduces a guard clause to provide a default avatar if \`user.profile\` is null or undefined.<br><br>
+                        <span class="text-sky-400">## Preventative Measure</span><br>
+                        Add a new integration test case that asserts the dashboard API returns a 200 OK for a user with a null profile object.
+                    </div>
+                </div>`,
+                // Slide 21
                 `<div class="slide-content text-left">
                     <h2>Example Prompts Summary</h2>
                     <p>These are the prompts used for the deep-dive examples within this presentation.</p>
@@ -548,9 +603,12 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                         <br><br>
                         <span class="text-emerald-400"># 4. Generating an Artifact from Research</span><br>
                         gemini "Using the research summary at @agentic_storage_research.md, create a 5-slide presentation in HTML with Tailwind CSS. The presentation should cover the problem, key challenges, and three different solution patterns." > presentation.html
+                        <br><br>
+                        <span class="text-emerald-400"># 5. Root Cause Analysis</span><br>
+                        git diff <span class="text-yellow-400">a1b2c3d^!</span> | gemini "You are a senior engineer. Analyze the following patch and write a Root Cause Analysis (RCA) document. Identify the user impact, the underlying root cause (not just the symptom), the fix, and suggest a preventative measure."
                     </div>
                 </div>`,
-                // Slide 19
+                // Slide 22
                 `<div class="slide-content text-left">
                     <h2>Our Conversation History</h2>
                     <p>This presentation was built iteratively. Here are the prompts you used to guide its creation:</p>
@@ -577,7 +635,7 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                         "add chinese subtitles to this slide deck"
                     </div>
                 </div>`,
-                // Slide 20
+                // Slide 23
                 `<div class="slide-content">
                     <h2 class="text-4xl">Start Automating Today</h2>
                     <p class="mt-4 text-xl text-gray-600">Gemini CLI is a versatile tool that can significantly boost your productivity.</p>
@@ -594,6 +652,13 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                 slide.innerHTML = slideContents[index];
             });
 
+            function populateVoiceList() {
+                voices = speechSynthesis.getVoices();
+                if(voices.length > 0) {
+                    playPauseBtn.disabled = false;
+                }
+            }
+
             function speak(text, onEndCallback) {
                 if (!('speechSynthesis' in window) || !text) {
                     if(onEndCallback) onEndCallback();
@@ -601,10 +666,32 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                 }
                 speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.onend = onEndCallback;
+
+                // Find a male US English voice with a priority list
+                let selectedVoice = voices.find(voice => voice.name === 'Google US English' && voice.name.toLowerCase().includes('male'));
+                if (!selectedVoice) {
+                    selectedVoice = voices.find(voice => voice.lang.startsWith('en-US') && voice.name.toLowerCase().includes('male'));
+                }
+                 if (!selectedVoice) {
+                    selectedVoice = voices.find(voice => voice.name === 'Google US English');
+                }
+                if (!selectedVoice) {
+                    selectedVoice = voices.find(voice => voice.lang.startsWith('en'));
+                }
+
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+
+                utterance.onend = () => {
+                    // BUGFIX: Only call the callback if we haven't manually navigated away
+                    if (!isManuallyNavigating) {
+                        onEndCallback();
+                    }
+                };
                 utterance.onerror = (event) => {
                     console.error('SpeechSynthesisUtterance.onerror', event);
-                     if(onEndCallback) onEndCallback();
+                     if(!isManuallyNavigating && onEndCallback) onEndCallback();
                 };
                 currentUtterance = utterance;
                 speechSynthesis.speak(utterance);
@@ -635,20 +722,19 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                 if (speechText) {
                     speak(speechText, () => {
                         if (presentationState === 'playing') {
-                           autoAdvanceTimeout = setTimeout(advanceSlide, 1000);
+                           setTimeout(advanceSlide, 1000);
                         }
                     });
                 } else {
                     // No speech, advance after a short delay
                     if (presentationState === 'playing') {
-                        autoAdvanceTimeout = setTimeout(advanceSlide, 2000); // Wait 2s on silent slides
+                        setTimeout(advanceSlide, 2000); // Wait 2s on silent slides
                     }
                 }
             }
             
             function showSlide(n) {
-                clearTimeout(autoAdvanceTimeout);
-                
+                isManuallyNavigating = true;
                 if (currentUtterance) {
                     currentUtterance.onend = null;
                 }
@@ -662,9 +748,15 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                 pageNumberEl.textContent = `${currentSlide + 1} / ${slides.length}`;
                 updateNavButtons();
 
+                
                 if (presentationState === 'playing') {
-                    playCurrentSlide();
+                    // Use a timeout to let the slide transition finish before speaking
+                    setTimeout(() => {
+                        isManuallyNavigating = false;
+                        playCurrentSlide();
+                    }, 50); 
                 } else {
+                    isManuallyNavigating = false;
                     subtitleContainer.style.opacity = '0';
                 }
             }
@@ -678,7 +770,6 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                 if (presentationState === 'playing') {
                     presentationState = 'paused';
                     playPauseBtn.innerHTML = playIcon;
-                    clearTimeout(autoAdvanceTimeout);
                     speechSynthesis.pause();
                 } else {
                     const wasPaused = presentationState === 'paused';
@@ -691,7 +782,13 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                     }
                 }
             }
-
+            
+            // Populate voices and enable play button
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = populateVoiceList;
+            }
+            populateVoiceList();
+            
             playPauseBtn.addEventListener('click', handlePlayPause);
             prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
             nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
@@ -703,7 +800,7 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                     if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
                 } else if (e.key === ' ') {
                     e.preventDefault();
-                    handlePlayPause();
+                    if(!playPauseBtn.disabled) handlePlayPause();
                 }
             });
             
