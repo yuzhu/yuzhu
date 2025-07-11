@@ -196,8 +196,8 @@
         data-subtitle="如您所见，Gemini 生成了一个完整、结构良好的 C++ 文件。它包含了所有必需的头文件，定义了扩展类，注册了一个占位符函数，并设置了 DuckDB 期望的 C 风格入口点。这是一个完美的开发起点。">
     </section>
     <section class="slide" id="slide12"
-        data-speech="Just as importantly, Gemini doesn't just give you code; it gives you a plan. It outlines the exact steps you need to take next: integrate the Alluxio client library, implement the actual file reading logic in the placeholder function, compile the code, and finally, test it. This turns a daunting task into a manageable, step-by-step process."
-        data-subtitle="同样重要的是，Gemini 不仅为您提供代码，还为您提供了一个计划。它概述了您接下来需要采取的确切步骤：集成 Alluxio 客户端库，在占位符函数中实现实际的文件读取逻辑，编译代码，最后进行测试。这将一个艰巨的任务变成了一个可管理的、循序渐进的过程。">
+        data-speech="Just as importantly, Gemini doesn't just give you code; it gives you a plan. It outlines the exact steps you need to take next: integrate the S3 client library, implement the actual file reading logic in the placeholder function, compile the code, and finally, test it. This turns a daunting task into a manageable, step-by-step process."
+        data-subtitle="同样重要的是，Gemini 不仅为您提供代码，还为您提供了一个计划。它概述了您接下来需要采取的确切步骤：集成 S3 客户端库，在占位符函数中实现实际的文件读取逻辑，编译代码，最后进行测试。这将一个艰巨的任务变成了一个可管理的、循序渐进的过程。">
     </section>
     <section class="slide" id="slide13"
         data-speech="Our final deep dive demonstrates a multi-step, agentic workflow. We'll have Gemini first perform a research task, save the output, and then use that output as the context for a second task: generating a brand new artifact. This shows how you can chain commands together to tackle complex projects."
@@ -400,7 +400,7 @@
                 // Slide 9
                 `<div class="slide-content">
                     <h2>Deep Dive 2: Scaffolding a DuckDB Extension</h2>
-                    <p class="max-w-3xl mx-auto">For a more advanced coding task, let's use \`gemini-cli\` to generate the boilerplate for a complex piece of software: a DuckDB extension to read data from the Alluxio file system.</p>
+                    <p class="max-w-3xl mx-auto">For a more advanced coding task, let's use \`gemini-cli\` to generate the boilerplate for a complex piece of software: a DuckDB extension to read data from the S3 file system.</p>
                     <p class="mt-4 text-lg">This demonstrates how Gemini can kickstart development by providing a solid foundation and a clear roadmap.</p>
                 </div>`,
                 // Slide 10
@@ -408,42 +408,42 @@
                     <h2>DuckDB Extension - The Prompt</h2>
                     <p>We'll use a detailed prompt to ask for the file structure, C++ code, and an explanation of the next steps.</p>
                     <div class="code-block text-sm text-left">
-                        $ gemini "I want to write a DuckDB extension in C++ to read data from the Alluxio file system. The extension should be named 'alluxio'. Please generate the basic file structure and the initial C++ code for the main extension file. The code should include the extension loading function and a placeholder for a table function to read a file from Alluxio. Also, provide a brief explanation of the key functions and next steps."
+                        $ gemini "I want to write a DuckDB extension in C++ to read data from the S3 file system. The extension should be named 'S3'. Please generate the basic file structure and the initial C++ code for the main extension file. The code should include the extension loading function and a placeholder for a table function to read a file from S3. Also, provide a brief explanation of the key functions and next steps."
                     </div>
                 </div>`,
                 // Slide 11
                 `<div class="slide-content">
                     <h2>DuckDB Extension - Generated Code</h2>
-                    <p>Gemini provides the C++ boilerplate for \`alluxio_extension.cpp\`.</p>
+                    <p>Gemini provides the C++ boilerplate for \`S3_extension.cpp\`.</p>
                     <div class="code-block text-xs text-left">
 <pre><code>#include "duckdb.hpp"
 #include "duckdb/function/table_function.hpp"
 #include "duckdb/main/extension_util.hpp"
 
-// Include Alluxio client library headers here
+// Include S3 client library headers here
 
 using namespace duckdb;
 
-// Placeholder function to read data from Alluxio
-static void AlluxioReadFunction(ClientContext &context, TableFunctionInput &data, DataChunk &output) {
-    // TODO: Implement the logic to connect to Alluxio, read a file,
+// Placeholder function to read data from S3
+static void S3ReadFunction(ClientContext &context, TableFunctionInput &data, DataChunk &output) {
+    // TODO: Implement the logic to connect to S3, read a file,
     // and populate the output DataChunk.
 }
 
-class AlluxioExtension : public Extension {
+class S3Extension : public Extension {
 public:
     void Load(DuckDB &db) override {
-        TableFunction alluxio_read("alluxio_read", {LogicalType::VARCHAR}, AlluxioReadFunction, nullptr);
-        ExtensionUtil::RegisterFunction(*db.instance, alluxio_read);
+        TableFunction S3_read("S3_read", {LogicalType::VARCHAR}, S3ReadFunction, nullptr);
+        ExtensionUtil::RegisterFunction(*db.instance, S3_read);
     }
-    std::string Name() override { return "alluxio"; }
+    std::string Name() override { return "S3"; }
 };
 
 extern "C" {
-    DUCKDB_EXTENSION_API void alluxio_init(DatabaseInstance &db) {
-        db.LoadExtension&lt;AlluxioExtension&gt;();
+    DUCKDB_EXTENSION_API void S3_init(DatabaseInstance &db) {
+        db.LoadExtension&lt;S3Extension&gt;();
     }
-    DUCKDB_EXTENSION_API const char *alluxio_version() {
+    DUCKDB_EXTENSION_API const char *S3_version() {
         return DuckDB::LibraryVersion();
     }
 }</code></pre>
@@ -457,16 +457,16 @@ extern "C" {
                         <h3 class="font-bold text-indigo-800">Your development plan:</h3>
                         <ol class="list-decimal list-inside mt-4 space-y-3 text-indigo-900">
                             <li>
-                                <strong>Integrate Alluxio Client API:</strong> Add the necessary \`#include\` directives for the Alluxio C++ client library and link against it in your build system.
+                                <strong>Integrate S3 Client API:</strong> Add the necessary \`#include\` directives for the S3 C++ client library and link against it in your build system.
                             </li>
                             <li>
-                                <strong>Implement File Reading Logic:</strong> Flesh out the \`AlluxioReadFunction\`. Use the Alluxio client to connect to the cluster, open the file path passed as an argument, read its contents (e.g., a CSV or Parquet file), and populate the \`output\` \`DataChunk\` with the parsed data.
+                                <strong>Implement File Reading Logic:</strong> Flesh out the \`S3ReadFunction\`. Use the S3 client to connect to the cluster, open the file path passed as an argument, read its contents (e.g., a CSV or Parquet file), and populate the \`output\` \`DataChunk\` with the parsed data.
                             </li>
                             <li>
                                 <strong>Compile and Install:</strong> Create a \`Makefile\` or use a build system like CMake to compile your C++ code into a shared library (\`.duckdb_extension\`).
                             </li>
                             <li>
-                                <strong>Load and Test:</strong> Launch DuckDB, \`INSTALL\` and \`LOAD\` your new extension, and test it by calling your \`alluxio_read('alluxio://path/to/file')\` table function.
+                                <strong>Load and Test:</strong> Launch DuckDB, \`INSTALL\` and \`LOAD\` your new extension, and test it by calling your \`S3_read('S3://path/to/file')\` table function.
                             </li>
                         </ol>
                     </div>
@@ -596,7 +596,7 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                         { git log --pretty=fuller <span class="text-yellow-400">\${REVISION_RANGE}</span>; echo -e "\\n---\\n"; git diff <span class="text-yellow-400">\${REVISION_RANGE}</span>; } | gemini "Analyze the provided git log and diff to create detailed upgrade instructions for a developer. Focus on breaking changes, new features, and any manual steps required. Infer the purpose from both the commit messages and the code changes."
                         <br><br>
                         <span class="text-emerald-400"># 2. Scaffolding a DuckDB Extension</span><br>
-                        gemini "I want to write a DuckDB extension in C++ to read data from the Alluxio file system. The extension should be named 'alluxio'. Please generate the basic file structure and the initial C++ code for the main extension file. The code should include the extension loading function and a placeholder for a table function to read a file from Alluxio. Also, provide a brief explanation of the key functions and next steps."
+                        gemini "I want to write a DuckDB extension in C++ to read data from the S3 file system. The extension should be named 'S3'. Please generate the basic file structure and the initial C++ code for the main extension file. The code should include the extension loading function and a placeholder for a table function to read a file from S3. Also, provide a brief explanation of the key functions and next steps."
                         <br><br>
                         <span class="text-emerald-400"># 3. Researching a Topic</span><br>
                         gemini "Research the key challenges and emerging solutions for storing the state of long-running agentic AI workflows. Focus on persistence, versioning, and cost-efficiency. Output a detailed summary." > agentic_storage_research.md
@@ -614,7 +614,7 @@ $ gemini "Using the research summary at @agentic_storage_research.md, create a 5
                     <p>This presentation was built iteratively. Here are the prompts you used to guide its creation:</p>
                     <div class="code-block text-xs" style="height: 65vh; overflow-y: auto;">
                         <span class="text-emerald-400"># 1. Initial Request</span><br>
-                        "make a slide deck using canvas showing how to install gemini-cli, some simple examples, and deep dive into two examples. 1.  Use gemini-cli to generate a release notes focusing on new features, bug fixes, security fixes and configuration changes. 2. Use gemini-cli to write an extension for duckdb in alluxio file system."
+                        "make a slide deck using canvas showing how to install gemini-cli, some simple examples, and deep dive into two examples. 1.  Use gemini-cli to generate a release notes focusing on new features, bug fixes, security fixes and configuration changes. 2. Use gemini-cli to write an extension for duckdb in S3 file system."
                         <br><br>
                         <span class="text-emerald-400"># 2. Refinement: From File to Git</span><br>
                         "make this into slides and make sure the release notes example does not assume change.txt exist, it needs to generate it from the source repo"
